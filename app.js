@@ -37,8 +37,29 @@ let gigs = [
     }
 ]
 
+// get route
 app.get("/gigs", (req,res) =>{
     res.send({gigs})
 })
 
+/*  /gigs/:id  get*/
+app.get("/gigs/:id", (req,res) =>{
+    const id = parseInt(req.params.id)
+    const gig = gigs.find((gig) => gig.id === id)
+    
+    if(!gig){
+        return res.status(404).send({message: "Gig not found"});
+    }
+    res.send({ gig })
+})
+
+/* /gigs/:id delete*/
+app.delete("/gigs/:id", (req,res) =>{
+    const id = parseInt(req.params.id)
+    //replace in memory state - could also use splice with index
+    const updatedGigs = gigs.filter((gig) => gig.id !== id);
+    gigs = updatedGigs
+    res.send ({message:"Successfully deleted gig", gigs})
+})
+/* gigs post */
 module.exports = app;
