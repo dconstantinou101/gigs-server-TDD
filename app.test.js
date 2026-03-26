@@ -26,12 +26,12 @@ describe("Should return a gig given a valid id", ()=>{
     })
 
     test("should return 404 if gig does not exist", async () => {
-    const response = await request(app).get("/gigs/66");
+        const response = await request(app).get("/gigs/66");
 
-    expect(response.statusCode).toBe(404);
-    expect(response.body).toHaveProperty("message");
-    expect(response.body.message).toBe("Gig not found");
-});
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("message");
+        expect(response.body.message).toBe("Gig not found");
+    });
 })
 
 describe("Delete /gigs/:id ", ()=>{
@@ -48,4 +48,12 @@ describe("Delete /gigs/:id ", ()=>{
         expect(response.body.gigs.length).toBe(2)
 
     })
+
+    test("should return 404 if array length not altered", async () => {
+        const response = await request(app).delete("/gigs/10");
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("message");
+        expect(response.body.message).toBe("Gig not found");
+    });
 })

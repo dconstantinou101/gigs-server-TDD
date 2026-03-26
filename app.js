@@ -58,8 +58,13 @@ app.delete("/gigs/:id", (req,res) =>{
     const id = parseInt(req.params.id)
     //replace in memory state - could also use splice with index
     const updatedGigs = gigs.filter((gig) => gig.id !== id);
+    if (updatedGigs.length === gigs.length) {
+    return res.status(404).json({ message: "Gig not found" });
+  }
     gigs = updatedGigs
     res.send ({message:"Successfully deleted gig", gigs})
 })
 /* gigs post */
+
+
 module.exports = app;
