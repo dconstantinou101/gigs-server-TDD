@@ -1,4 +1,5 @@
-const gigs = [
+module.exports = {
+    gigs: [
 
     {
         id: 1,
@@ -25,9 +26,9 @@ const gigs = [
         location: "Nottingham, Royal Concert Hall",
         image: "https://www.shutterstock.com/image-photo/zagreb-croatia-june-27-2017-rockfest-669771274?trackingId=a9dfd94e-39f0-4b09-bf8e-28fe8d55eea0&listId=searchResults"
     }
-]
+]}
 
-module.exports = gigs;
+
 
 // {
 //         id:,
