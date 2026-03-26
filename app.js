@@ -1,5 +1,5 @@
 //app.js
-let gigs = require(./"gigsDB")
+let gigs = require("./gigsDB");
 const express = require("express");
 const cors = require("cors");
 
@@ -8,10 +8,6 @@ app.use(express.json());
 
 app.use(cors());
 
-let gigs = [
-
-
-]
 
 
 module.exports = app;
