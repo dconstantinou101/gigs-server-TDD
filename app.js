@@ -1,13 +1,17 @@
+//app.js
+let gigs = require(./"gigsDB")
 const express = require("express");
 const cors = require("cors");
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
 
 app.use(cors());
 
-const port = 3000;
+let gigs = [
 
-app.listen(port, () => {
-  console.log("Now listening on port", port);
-});
+
+]
+
+
+module.exports = app;
