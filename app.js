@@ -114,8 +114,6 @@ app.post("/gigs", (req, res) => {
 //Delete gigs array
 app.delete("/gigs", (req,res) =>{
 
-  //edge cases to capture:
-  //check array not already empty
   gigs = [];
   res.send({
     message: "Successfully deleted all the gigs",
@@ -123,5 +121,68 @@ app.delete("/gigs", (req,res) =>{
   })
 
 })
+
+//put root to meet challenge use case.  To follow REST semantics this scenario should
+// ideally be implemented usign a PATCH endpoint since only 1 field is bing updated.
+//PUT - full replacement contract
+//PATCH - partial update contact can be 1 - to all of the fields
+app.put("/gigs/:id", (req,res) =>{
+  const id = parseInt(req.params.id);
+  console.log(id)
+  //destructure to get date from body
+  const { date } = req.body;
+  // console.log(req.body)
+  // console.log(date)
+
+  if (!date) {
+    return res.status(400).json({ message: "Request must include a date" });
+  }
+
+  //find matching gig to update
+  const gig = gigs.find((gig) => gig.id === id);
+
+  //if no match with id send error message
+  if(!gig) {
+    return res.status(404).send({message: "Gig not found"})
+  }
+
+  //update gig date
+  gig.date = date;
+
+  //return update gig
+  res.send({gig:gig});
+
+}) 
+
+//patch route: one or all of the fields can be updated - not the full resource
+//only provided fields are updated
+//id source of truth ---> req.params
+app.patch("/gigs/:id", (req,res) => {
+  const id = parseInt(req.params.id);
+
+  const gigUpdates = req.body;
+
+// edge case - no gig object passed or gig object is empty
+  if (!gigUpdates || Object.keys(gigUpdates).length === 0) {
+    return res.status(400).send({
+      message: "No properties were provided to update",
+    });
+  }
+
+  //find matching gig to update
+  const gig = gigs.find((gig) => gig.id === id);
+
+  //if no match with id send error message
+  if(!gig) {
+    return res.status(404).send({message: "Gig not found"})
+  }
+
+  Object.keys(gigUpdates).forEach((key) => {
+    gig[key] = gigUpdates[key]
+    console.log(`${key}:${gigUpdates[key]}`);
+  })
+  res.send({gig:gig});
+})
+
 
 module.exports = app;

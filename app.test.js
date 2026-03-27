@@ -135,4 +135,82 @@ describe("POST /gigs", ()=> {
     });
 
   })
+
+  describe("PUT /gigs:id", () => {
+    test("Updates the date property of the gig object with matching id", async () => {
+        const response = await request(app).put("/gigs/1").send({date: "2026-12-31"});
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("gig")
+        expect(response.body.gig.id).toBe(1)
+        expect(response.body.gig.date).toBe("2026-12-31")
+
+    })
+
+    test("should return 400 if no date is provided", async () => {
+        const response = await request(app)
+            .put("/gigs/1")
+            .send({});
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body.message).toBe("Request must include a date");
+    });
+
+    test("should return 404 if gig does not exist", async () => {
+    const response = await request(app)
+        .put("/gigs/666")
+        .send({ date: "2026-12-31" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Gig not found");
+
+    });
+  })
+
+  describe("PATCH /gigs/:id", () => {
+    test("Updates the a property of the gig object with matching id", async () => {
+        const response = await request(app).patch("/gigs/1").send({name: "The Doors"});
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("gig")
+        expect(response.body.gig.id).toBe(1)
+        expect(response.body.gig.name).toBe("The Doors")
+
+    })
+
+    test("Updates multiple properties of the gig object with matching id", async () => {
+        const response = await request(app).patch("/gigs/1")
+        .send(
+            {
+                name: "The Doors",
+                description: "Riders on The Storm Tour"
+            });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("gig")
+        expect(response.body.gig.id).toBe(1)
+        expect(response.body.gig.name).toBe("The Doors")
+        expect(response.body.gig.description).toBe("Riders on The Storm Tour")
+
+    })
+
+    test("should return 400 if no properties are provided", async () => {
+        const response = await request(app)
+            .patch("/gigs/1")
+            .send({});
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body.message).toBe("No properties were provided to update");
+    });
+
+    test("should return 404 if gig does not exist", async () => {
+    const response = await request(app)
+        .patch("/gigs/666")
+        .send({ date: "2026-12-31" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Gig not found");
+
+    });
+   });
    
