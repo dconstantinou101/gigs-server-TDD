@@ -1,8 +1,10 @@
 const request = require("supertest")
-const app = require("./app")
-
+//const app = require("./app")
+//resets the app module for each test
+let app
 beforeEach(() => {
   jest.resetModules();
+  app = require("./app")
 });
 
 describe("Get gigs endpoint returns the expected data", ()=>{
@@ -57,3 +59,80 @@ describe("Delete /gigs/:id ", ()=>{
         expect(response.body.message).toBe("Gig not found");
     });
 })
+
+describe("POST /gigs", ()=> {
+    test("Adds a new gig and returns the updated list of gigs", async ()=>{
+        const newGig =  {
+            id: 4,
+            name: "Fleetfoxes",
+            description: "Myconos Tour",
+            date: "2026-03-24",
+            location: "Birmingham NEC",
+            image: "https://www.shutterstock.com/image-photo/barcelona-jul-1-fleet-foxes-folk-1143764111?trackingId=63f5f533-2a32-4683-93b2-dcebbfdccbdc&listId=searchResults"
+
+    }
+        const response = await request(app).post("/gigs").send({gig: newGig});
+        console.log(response.body.gigs)
+
+        expect(response.statusCode).toBe(201)
+        expect(response.body.gigs.length).toBe(4);
+
+    })
+
+    test("Should return 400 status if gig object is empty contains no properties", async () =>{
+        const response = await request(app).post("/gigs").send({gig:{}});
+        
+        expect(response.statusCode).toBe(400);
+        expect(response.body.message).toBe("Request must include a gig object with properties")
+    })
+
+    test("Should return 400 status no gig object is passed", async () =>{
+        const response = await request(app).post("/gigs").send();
+        
+        expect(response.statusCode).toBe(400);
+        expect(response.body.message).toBe("Request must include a gig object with properties")
+    })
+
+    test("should return 400 if a required property field is missing", async () => {
+        const invalidGig = {
+        name: "Fleetfoxes",
+        description: "Myconos Tour",
+        date: "2026-03-24",
+        location: "Birmingham NEC"
+        // no image passed
+        };
+
+        const response = await request(app)
+        .post("/gigs")
+        .send({ gig: invalidGig });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body.message).toBe("Missing property value: image");
+  });
+})
+
+  describe("DELETE /gigs", () => {
+     test("should delete all gigs and return an empty gigs aray with a message", async() => {
+        const response = await request(app).delete("/gigs");
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("message")
+        expect(response.body.message).toBe("Successfully deleted all the gigs")
+
+        expect(response.body.gigs.length).toBe(0);
+    })
+
+    test("should still return success when gigs array is already empty", async () => {
+        // First delete - to set base condition for test case
+        await request(app).delete("/gigs");
+
+        // Second delete - for required test scenario
+        const response = await request(app).delete("/gigs");
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.message).toBe("Successfully deleted all the gigs");
+        expect(response.body.gigs.length).toBe(0);
+    });
+
+  })
+   

@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.use(cors());
 
-///Home of gigs database - refactor later to a seperate db file
+///Home of gigs database - TODO refactor later to a seperate db file
 let gigs = [
 
     {
@@ -53,7 +53,7 @@ app.get("/gigs/:id", (req,res) =>{
     res.send({ gig })
 })
 
-/* /gigs/:id delete*/
+// /gigs/:id delete*/
 app.delete("/gigs/:id", (req,res) =>{
     const id = parseInt(req.params.id)
     //replace in memory state - could also use splice with index
@@ -64,7 +64,64 @@ app.delete("/gigs/:id", (req,res) =>{
     gigs = updatedGigs
     res.send ({message:"Successfully deleted gig", gigs})
 })
-/* gigs post */
 
+// Gigs post route
+
+app.post("/gigs", (req, res) => {
+  const newGig = req.body.gig;
+
+// edge case - no gig object passed or gig object is empty
+  if (!newGig || Object.keys(newGig).length === 0) {
+    return res.status(400).send({
+      message: "Request must include a gig object with properties",
+    });
+  }
+
+  // edge case - catch any missing properties values in the passed object
+  const requiredProps =  ["name", "description", "date", "location", "image"]
+  for (const prop of requiredProps){
+    if(!newGig[prop]){
+        return res.status(400).send({message: `Missing property value: ${prop}`})
+    }
+  }
+
+  //need an id generator - could use uuid package but this returns a string, so would need to change tests etc
+  //compromise for current needs - use max value of current id's to generate new one
+   //use map to loop thru gigs to return an array of ids then use spread for math.max
+  const newId =
+    gigs.length > 0 ? Math.max(...gigs.map((gig) => gig.id)) + 1 : 1;
+
+  const gigToAdd = {
+    id: newId,
+    name: newGig.name,
+    description: newGig.description,
+    date: newGig.date,
+    location: newGig.location,
+    image: newGig.image,
+  };
+  //push mutates the aray and return length
+  gigs.push(gigToAdd);
+  
+  console.log(gigs)
+
+  //201 - created code. Respond with message and updataed gigs list
+  res.status(201).send({
+    message: "Successfully posted new gig",
+    gigs,
+  });
+});
+
+//Delete gigs array
+app.delete("/gigs", (req,res) =>{
+
+  //edge cases to capture:
+  //check array not already empty
+  gigs = [];
+  res.send({
+    message: "Successfully deleted all the gigs",
+    gigs,
+  })
+
+})
 
 module.exports = app;
