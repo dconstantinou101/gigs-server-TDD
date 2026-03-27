@@ -212,5 +212,17 @@ describe("POST /gigs", ()=> {
     expect(response.body.message).toBe("Gig not found");
 
     });
+
+    test("SHould return status cod eof 400 if invalid keys are provided to update", async () => {
+        const response = await request(app).patch("/gigs/1")
+        .send(
+            {
+                Fruit: "apple",
+                cat: "Norweigan Forest"
+            });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body.message).toBe("Invalid property key provided for update")
+    })
    });
    

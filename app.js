@@ -177,6 +177,19 @@ app.patch("/gigs/:id", (req,res) => {
     return res.status(404).send({message: "Gig not found"})
   }
 
+  //restrict updates to only allowed key names
+  const allowedKeys = ["name", "description", "date", "location", "image"];
+  
+  //create array of keys to uupdate
+  const keysToUpdate = Object.keys(gigUpdates);
+
+  //check properties for invalid keys
+  const invalidKey = keysToUpdate.some((key) => !allowedKeys.includes(key));
+
+  if(invalidKey) {
+    return res.status(400).send({message: "Invalid property key provided for update"})
+  }
+
   Object.keys(gigUpdates).forEach((key) => {
     gig[key] = gigUpdates[key]
     console.log(`${key}:${gigUpdates[key]}`);
