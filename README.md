@@ -1,4 +1,4 @@
-**This is a very simple Express server, to be used to complete the JavaScript fundamentals modules.**
+**This is a simple Express server, to be used to complete the JavaScript fundamentals modules.**
 
 ### Set-up: 
 
@@ -11,7 +11,7 @@
 ```
 npm install
 
-node app.js // This will start the server on a local port on your machine
+npm run dev // This will start the server on a local port on your machine
 ```
 
 Every time you make a change to the server code, make sure to re-run `node app.js` to have the latest version of your code running. 
